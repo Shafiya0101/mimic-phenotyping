@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+*.h5ad
+mimic_phenotyped.csv
+.DS_Store
+.venv/
+venv/
+env/
+*.egg-info/
+.streamlit/secrets.toml
+data/*.csv
+!data/.gitkeep
+notebooks/executed_test.ipynb
