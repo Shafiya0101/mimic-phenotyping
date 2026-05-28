@@ -4,8 +4,8 @@
 > subgroups, reimplementing the [ehrapy MIMIC-II tutorial](https://github.com/theislab/ehrapy)
 > story with scikit-learn — plus an interactive **Streamlit dashboard**.
 
-[![CI](https://github.com/USER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/USER/REPO/actions)
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/USER/REPO/blob/main/notebooks/mimic_phenotyping.ipynb)
+[![CI](https://github.com/USER/REPO/actions/workflows/ci.yml/badge.svg)](https://github.com/Shafiya0101/mimic-phenotyping/actions)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Shafiya0101/mimic-phenotyping/blob/main/notebooks/mimic_phenotyping.ipynb)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ---
@@ -47,7 +47,7 @@ URLs after you push.)*
 ### Option B — Run the dashboard locally
 
 ```bash
-git clone https://github.com/USER/REPO.git
+git clone https://github.com/Shafiya0101/mimic-phenotyping.git
 cd REPO
 pip install -r requirements.txt
 streamlit run dashboard/app.py
