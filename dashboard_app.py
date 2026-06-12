@@ -288,7 +288,7 @@ for col, val, lbl in [
 st.write("")
 tab_map, tab_clusters, tab_features, tab_qc, tab_data, tab_rag = st.tabs(
     ["🗺️ Phenotype Map", "🧬 Cluster Profiles", "📊 Feature Drivers",
-     "🩺 Data Quality", "🗃️ Cohort Table", "🤖 Clinical RAG"])
+     "🩺 Data Quality", "🗃️ Cohort Table", "🤖 PhenoPrompt"])
 
 label_names = {c: f"{c}: {res.annotations[c]}" for c in sorted(res.annotations)}
 plot_df = pd.DataFrame({
