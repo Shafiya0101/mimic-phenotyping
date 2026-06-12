@@ -268,11 +268,21 @@ res = get_result(f"{source}-{len(df)}-{k}-{n_pcs}-{knn}-{use_umap}-{seed}",
 # --------------------------------------------------------------------------- #
 # Header                                                                      #
 # --------------------------------------------------------------------------- #
-st.markdown('<div class="hero-title">Disease Phenotyping · MIMIC-II</div>',
+st.markdown('<div class="hero-title">Clinical Phenotype Explorer</div>',
             unsafe_allow_html=True)
-st.markdown('<p class="hero-sub">Unsupervised discovery of ICU patient subgroups '
-            '— preprocess → impute → PCA → embed → cluster → annotate</p>',
+st.markdown('<p class="hero-sub">Discover patient subgroups from clinical data '
+            '— and query them in natural language</p>',
             unsafe_allow_html=True)
+st.write("")
+st.markdown("""
+- **Unsupervised phenotype discovery** — patient subgroups found without disease labels
+- **Interactive views** — phenotype map, cluster profiles, and feature drivers
+- **PhenoPrompt tab** — ask clinical questions over the notes corpus in natural language
+- **Grounded & cited** — answers come from retrieved notes, with source citations
+- **Synthetic, reproducible data** — no patient privacy risk
+""")
+st.info("👉 Open the **🤖 PhenoPrompt** tab to ask a question in plain English — "
+        "e.g. *What medications are documented for patients with diabetes and kidney disease?*")
 st.write("")
 
 c1, c2, c3, c4 = st.columns(4)
