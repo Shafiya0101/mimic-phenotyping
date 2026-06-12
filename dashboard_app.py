@@ -426,8 +426,8 @@ with tab_data:
 
 # --- Tab 6: Clinical RAG (PhenoPrompt) ------------------------------------- #
 with tab_rag:
-     st.markdown("#### PhenoPrompt — ask clinical questions over the notes corpus")
-     st.caption("This companion view runs retrieval-augmented generation over the unstructured "
+    st.markdown("#### PhenoPrompt — ask clinical questions over the notes corpus")
+    st.caption("This companion view runs retrieval-augmented generation over the unstructured "
                "clinical-notes corpus (separate from the structured MIMIC cohort above). "
                "Answers are grounded in retrieved notes, with citations.")
     idx = load_rag_index()
