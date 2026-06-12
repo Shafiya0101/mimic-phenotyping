@@ -1,12 +1,12 @@
 """
 Streamlit dashboard for MIMIC-II disease phenotyping.
 Now includes an embedded Clinical RAG tab (PhenoPrompt) as a sixth tab.
-
+ 
 Run locally:
     pip install -r requirements.txt
     streamlit run dashboard/app.py
 """
-
+ 
 import sys
 import os
 import re
@@ -17,7 +17,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
-
+ 
 # Make src/ importable whether launched from repo root or dashboard/.
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
@@ -25,7 +25,7 @@ from src.phenotyping import (  # noqa: E402
     load_synthetic_mimic, load_real_mimic, run_pipeline,
     NUMERIC_FEATURES, FLAG_FEATURES,
 )
-
+ 
 # --------------------------------------------------------------------------- #
 # Page config + theme                                                         #
 # --------------------------------------------------------------------------- #
@@ -35,10 +35,10 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
+ 
 PALETTE = ["#1FA6C9", "#54C285", "#F4CC47", "#E2725B",
            "#9B5DE5", "#57C8B9", "#FF7F50", "#8D99AE"]
-
+ 
 st.markdown(
     """
     <style>
@@ -65,8 +65,8 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-
+ 
+ 
 # --------------------------------------------------------------------------- #
 # Data + pipeline (cached)                                                    #
 # --------------------------------------------------------------------------- #
@@ -78,15 +78,15 @@ def get_data(source: str, n_patients: int, seed: int) -> pd.DataFrame:
             return df
         st.sidebar.warning("ehrapy/MIMIC-II unavailable — using synthetic data.")
     return load_synthetic_mimic(n_patients=n_patients, seed=seed)
-
-
+ 
+ 
 @st.cache_data(show_spinner=False)
 def get_result(df_hash_key: str, df: pd.DataFrame, k: int, n_pcs: int,
                knn: int, use_umap: bool, seed: int):
     return run_pipeline(df, n_clusters=k, n_pcs=n_pcs,
                         knn_neighbors=knn, use_umap=use_umap, random_state=seed)
-
-
+ 
+ 
 # --------------------------------------------------------------------------- #
 # Clinical RAG (PhenoPrompt) — embedded tab                                   #
 # Loads the notes index directly from the phenoprompt repo over the web, so   #
@@ -122,8 +122,8 @@ RAG_SEARCH_TOOL = [{
                        "required": ["query"]},
     },
 }]
-
-
+ 
+ 
 def rag_key():
     k = os.environ.get("MISTRAL_API_KEY")
     if k:
@@ -132,8 +132,8 @@ def rag_key():
         return st.secrets["MISTRAL_API_KEY"]
     except Exception:
         return None
-
-
+ 
+ 
 @st.cache_resource(show_spinner=False)
 def load_rag_index():
     """Return (notes, note_ents, idf, vocab, note2cluster) or None on failure."""
@@ -160,8 +160,8 @@ def load_rag_index():
         return notes, note_ents, idf, vocab, note2cluster
     except Exception:
         return None
-
-
+ 
+ 
 def rag_query_entities(q, vocab):
     q = q.lower(); h = {}
     for e in vocab:
@@ -177,8 +177,8 @@ def rag_query_entities(q, vocab):
             if tok in e.split():
                 h[e] = max(h.get(e, 0.0), 0.6)
     return h
-
-
+ 
+ 
 def rag_retrieve(q, notes, note_ents, idf, vocab, k):
     qe = rag_query_entities(q, vocab)
     if not qe:
@@ -193,8 +193,8 @@ def rag_retrieve(q, notes, note_ents, idf, vocab, k):
             scored.append((nid, round(float(s), 3)))
     scored.sort(key=lambda x: x[1], reverse=True)
     return scored[:k]
-
-
+ 
+ 
 def rag_answer(question, notes, hits, note2cluster, key):
     blocks = []
     for nid, _ in hits:
@@ -212,8 +212,8 @@ def rag_answer(question, notes, hits, note2cluster, key):
         {"role": "system", "content": RAG_SYSTEM},
         {"role": "user", "content": f"Context notes:\n\n{context}\n\nQuestion: {question}"}])
     return r.choices[0].message.content
-
-
+ 
+ 
 def rag_agentic(question, notes, note_ents, idf, vocab, note2cluster, key, k):
     from mistralai import Mistral
     client = Mistral(api_key=key)
@@ -241,16 +241,15 @@ def rag_agentic(question, notes, note_ents, idf, vocab, note2cluster, key, k):
                      "content": tool_content, "tool_call_id": tc.id})
     r2 = client.chat.complete(model=RAG_CHAT_MODEL, messages=messages, temperature=0.1)
     return r2.choices[0].message.content, hits, sq
-
-
+ 
+ 
 # --------------------------------------------------------------------------- #
 # Sidebar controls                                                            #
 # --------------------------------------------------------------------------- #
 with st.sidebar:
     st.markdown("### ⚙️ Pipeline controls")
-    source = st.radio("Data source",
-                      ["Synthetic MIMIC-like", "Real MIMIC-II (ehrapy)"],
-                      help="Real data needs credentialed PhysioNet access + ehrapy installed.")
+    source = "Synthetic MIMIC-like"
+    st.caption("Data source: Synthetic MIMIC-like cohort (no PHI)")
     n_patients = st.slider("Cohort size (synthetic)", 300, 3000, 1776, step=100)
     k = st.slider("Number of clusters (k)", 2, 8, 6)
     n_pcs = st.slider("PCA components", 2, 18, 10)
@@ -260,31 +259,21 @@ with st.sidebar:
     st.markdown("---")
     st.caption("Built for the EHR analysis coding exercise · ehrapy-style "
                "phenotyping reimplemented with scikit-learn.")
-
+ 
 df = get_data(source, n_patients, seed)
 res = get_result(f"{source}-{len(df)}-{k}-{n_pcs}-{knn}-{use_umap}-{seed}",
                  df, k, n_pcs, knn, use_umap, seed)
-
+ 
 # --------------------------------------------------------------------------- #
 # Header                                                                      #
 # --------------------------------------------------------------------------- #
-st.markdown('<div class="hero-title">Clinical Phenotype Explorer</div>',
+st.markdown('<div class="hero-title">Disease Phenotyping · MIMIC-II</div>',
             unsafe_allow_html=True)
-st.markdown('<p class="hero-sub">Discover patient subgroups from clinical data '
-            '— and query them in natural language</p>',
+st.markdown('<p class="hero-sub">Unsupervised discovery of ICU patient subgroups '
+            '— preprocess → impute → PCA → embed → cluster → annotate</p>',
             unsafe_allow_html=True)
 st.write("")
-st.markdown("""
-- **Unsupervised phenotype discovery** — patient subgroups found without disease labels
-- **Interactive views** — phenotype map, cluster profiles, and feature drivers
-- **PhenoPrompt tab** — ask clinical questions over the notes corpus in natural language
-- **Grounded & cited** — answers come from retrieved notes, with source citations
-- **Synthetic, reproducible data** — no patient privacy risk
-""")
-st.info("👉 Open the **🤖 PhenoPrompt** tab to ask a question in plain English — "
-        "e.g. *What medications are documented for patients with diabetes and kidney disease?*")
-st.write("")
-
+ 
 c1, c2, c3, c4 = st.columns(4)
 for col, val, lbl in [
     (c1, f"{len(df):,}", "Patients"),
@@ -294,12 +283,12 @@ for col, val, lbl in [
 ]:
     col.markdown(f'<div class="metric-card"><div class="metric-val">{val}</div>'
                  f'<div class="metric-lbl">{lbl}</div></div>', unsafe_allow_html=True)
-
+ 
 st.write("")
 tab_map, tab_clusters, tab_features, tab_qc, tab_data, tab_rag = st.tabs(
     ["🗺️ Phenotype Map", "🧬 Cluster Profiles", "📊 Feature Drivers",
      "🩺 Data Quality", "🗃️ Cohort Table", "🤖 PhenoPrompt"])
-
+ 
 label_names = {c: f"{c}: {res.annotations[c]}" for c in sorted(res.annotations)}
 plot_df = pd.DataFrame({
     "x": res.embedding[:, 0], "y": res.embedding[:, 1],
@@ -307,7 +296,7 @@ plot_df = pd.DataFrame({
     "age": df["age"].values,
     "mortality": df["day_28_flg"].values if "day_28_flg" in df else 0,
 })
-
+ 
 # --- Tab 1: embedding map -------------------------------------------------- #
 with tab_map:
     cc1, cc2 = st.columns([3, 2])
@@ -337,7 +326,7 @@ with tab_map:
                            paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                            title=f"Coloured by {color_by}")
         st.plotly_chart(fig2, use_container_width=True)
-
+ 
 # --- Tab 2: cluster profiles ---------------------------------------------- #
 with tab_clusters:
     st.markdown("#### Phenotype cards")
@@ -361,7 +350,7 @@ with tab_clusters:
                 f'28-day mortality {mort:.0f}%</div></div>',
                 unsafe_allow_html=True)
             st.write("")
-
+ 
     st.markdown("#### Cluster × feature heatmap (z-scored)")
     prof = res.cluster_profile.copy()
     z = (prof - prof.mean()) / (prof.std(ddof=0) + 1e-9)
@@ -373,7 +362,7 @@ with tab_clusters:
                        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
                        xaxis=dict(tickangle=-45))
     st.plotly_chart(heat, use_container_width=True)
-
+ 
 # --- Tab 3: feature drivers ------------------------------------------------ #
 with tab_features:
     sel = st.selectbox("Inspect a cluster",
@@ -391,7 +380,7 @@ with tab_features:
                       title=f"What defines Cluster {sel}",
                       coloraxis_showscale=False)
     st.plotly_chart(bar, use_container_width=True)
-
+ 
     st.markdown("#### PCA explained variance")
     ev = res.explained_var
     evfig = px.bar(x=[f"PC{i+1}" for i in range(len(ev))], y=ev * 100,
@@ -400,7 +389,7 @@ with tab_features:
     evfig.update_layout(template="plotly_dark", height=300,
                         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
     st.plotly_chart(evfig, use_container_width=True)
-
+ 
 # --- Tab 4: data quality --------------------------------------------------- #
 with tab_qc:
     st.markdown("#### Missing values before imputation")
@@ -416,14 +405,14 @@ with tab_qc:
                    f"at {miss.iloc[0]:.1f}%.")
     else:
         st.success("No missing values detected in this cohort.")
-
+ 
     st.markdown("#### Feature distributions")
     feat = st.selectbox("Feature", [c for c in NUMERIC_FEATURES if c in df.columns])
     dist = px.histogram(df, x=feat, nbins=40, color_discrete_sequence=["#1FA6C9"])
     dist.update_layout(template="plotly_dark", height=320,
                        paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)")
     st.plotly_chart(dist, use_container_width=True)
-
+ 
 # --- Tab 5: data table ----------------------------------------------------- #
 with tab_data:
     show = df.copy()
@@ -433,7 +422,7 @@ with tab_data:
     st.download_button("⬇️ Download labelled cohort (CSV)",
                        show.to_csv(index=False).encode(),
                        "mimic_phenotyped.csv", "text/csv")
-
+ 
 # --- Tab 6: Clinical RAG (PhenoPrompt) ------------------------------------- #
 with tab_rag:
     st.markdown("#### PhenoPrompt — ask clinical questions over the notes corpus")
@@ -491,3 +480,4 @@ with tab_rag:
                 for nid, score in hits:
                     with st.expander(f"note {nid} · score {score}"):
                         st.write(notes.get(nid, ""))
+ 
