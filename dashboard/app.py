@@ -114,6 +114,7 @@ st.markdown('<p class="hero-sub">Unsupervised discovery of ICU patient subgroups
             '— preprocess → impute → PCA → embed → cluster → annotate</p>',
             unsafe_allow_html=True)
 st.write("")
+st.info("🔗 Companion app — ask clinical questions over notes with the [PhenoPrompt Clinical RAG](https://phenoprompt.streamlit.app/)")
 
 c1, c2, c3, c4 = st.columns(4)
 for col, val, lbl in [
