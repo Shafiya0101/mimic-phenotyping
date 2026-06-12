@@ -6,6 +6,7 @@ seaborn>=0.12
 plotly>=5.18
 streamlit>=1.30
 umap-learn>=0.5
+mistralai==1.9.11
 # Optional — only needed for the REAL MIMIC-II IAC dataset:
 # ehrapy>=0.8
 # ehrdata>=0.0.3
