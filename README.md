@@ -4,7 +4,7 @@
 > subgroups, reimplementing the [ehrapy MIMIC-II tutorial](https://github.com/theislab/ehrapy)
 > story with scikit-learn — plus an interactive **Streamlit dashboard**.
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Streamlit-FF4B4B?logo=streamlit&logoColor=white)](https://mimic-phenotyping-ykpfxskdq6u3yavtfffiqg.streamlit.app/)
+[![Live Demo](https://img.shields.io/badge/Live_Demo-Streamlit-FF4B4B?logo=streamlit&logoColor=white)]([https://mimic-phenotyping-ykpfxskdq6u3yavtfffiqg.streamlit.app/](https://phenoprompt-skausar-aivancity.streamlit.app/))
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Shafiya0101/mimic-phenotyping/blob/main/notebooks/mimic_phenotyping.ipynb)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
