@@ -30,7 +30,7 @@ from src.phenotyping import (  # noqa: E402
 # Page config + theme                                                         #
 # --------------------------------------------------------------------------- #
 st.set_page_config(
-    page_title="MIMIC-II Phenotyping",
+    page_title="PhenoPrompt",
     page_icon="🫀",
     layout="wide",
     initial_sidebar_state="expanded",
