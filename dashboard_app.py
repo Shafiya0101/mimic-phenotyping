@@ -138,7 +138,7 @@ def rag_key():
 def load_rag_index():
     """Return (notes, note_ents, idf, vocab, note2cluster) or None on failure."""
     try:
-        nd = pd.read_csv(f"{PHENO_RAW}/stage1_outputs/notes.csv", dtype={"idx": str})
+        nd = pd.read_csv(f"{PHENO_RAW}/stage1_outputs/notes.csv.gz", dtype={"idx": str}, compression="gzip")
         notes = dict(zip(nd["idx"], nd["note"]))
         m = pd.read_csv(f"{PHENO_RAW}/stage1_outputs/entity_mentions.csv", dtype={"note_id": str})
         m = m[(m["assertion"] == "affirmed") & (m["note_id"].isin(notes))]
